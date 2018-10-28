@@ -35,14 +35,29 @@ class XmlParser {
     private fun parseItem(parser: XmlPullParser): NewsItemDataModel {
         val item = NewsItemDataModel()
         while (parser.next() != XmlPullParser.END_TAG) {
+            Log.d(TAG, " " + parser.name + " ")
+            Log.d(TAG, " " + (parser.eventType != XmlPullParser.START_TAG))
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
             }
             when (parser.name) {
                 "title" -> item.title = parseTextFromField(parser, "title")
+                "pubDate" -> item.date = parseTextFromField(parser, "pubDate")
+                else -> skipTag(parser)
             }
         }
         return item
+    }
+
+    @Throws(XmlPullParserException::class, IOException::class)
+    private fun skipTag(parser: XmlPullParser) {
+        var depth = 1
+        while (depth != 0) {
+            when (parser.next()) {
+                XmlPullParser.END_TAG -> depth--
+                XmlPullParser.START_TAG -> depth++
+            }
+        }
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
