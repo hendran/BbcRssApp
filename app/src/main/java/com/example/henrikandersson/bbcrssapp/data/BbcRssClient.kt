@@ -19,21 +19,21 @@ class BbcRssClient {
 
     init {
         val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(OkHttpClient.Builder().build())
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
+                .baseUrl(BASE_URL)
+                .client(OkHttpClient.Builder().build())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
         bbcRssService = retrofit.create(BbcRssService::class.java)
     }
 
     fun getRssFeed(): Single<ArrayList<NewsItemDataModel>> {
         return Single.fromObservable(
-            bbcRssService.getRssFeed()
-                .subscribeOn(Schedulers.computation())
-                .map { rawXml ->
-                    XmlParser().parse(rawXml)
-                }.toObservable()
+                bbcRssService.getRssFeed()
+                        .subscribeOn(Schedulers.computation())
+                        .map { rawXml ->
+                            XmlParser().parse(rawXml)
+                        }.toObservable()
         )
     }
 }

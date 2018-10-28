@@ -5,5 +5,5 @@ import retrofit2.http.GET
 
 interface BbcRssService {
     @GET("rss.xml?edition=uk")
-    fun getRssFeed():Single<String>
+    fun getRssFeed(): Single<String>
 }

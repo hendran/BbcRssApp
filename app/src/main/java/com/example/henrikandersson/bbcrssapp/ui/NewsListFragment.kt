@@ -83,6 +83,7 @@ class NewsListFragment : Fragment() {
     private fun convertToDisplayableNewsItem(dataModel: NewsItemDataModel): DisplayableNewsItem {
         val convertedItem = DisplayableNewsItem()
         convertedItem.name = dataModel.title
+        convertedItem.date = dataModel.date
         return convertedItem
     }
 

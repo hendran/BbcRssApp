@@ -31,9 +31,11 @@ class NewsListAdapter : RecyclerView.Adapter<NewsListAdapter.NewsItemViewHolder>
     override fun onBindViewHolder(holder: NewsItemViewHolder, position: Int) {
         val newsItem = mNews[position]
         holder.title.text = newsItem.name
+        holder.date.text = newsItem.date
     }
 
     class NewsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.title)
+        val date: TextView = view.findViewById(R.id.date)
     }
 }
