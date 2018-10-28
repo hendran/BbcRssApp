@@ -11,6 +11,9 @@ import java.io.StringReader
 class XmlParser {
     companion object {
         private const val TAG = "XmlParser"
+        private const val NAME_ITEM = "item"
+        private const val NAME_TITLE = "title"
+        private const val NAME_PUB_DATE = "pubDate"
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
@@ -20,7 +23,7 @@ class XmlParser {
         parser.setInput(StringReader(xml))
         while (parser.eventType != XmlPullParser.END_DOCUMENT) {
             if (parser.eventType == XmlPullParser.START_TAG) {
-                if (parser.name == "item") {
+                if (parser.name == NAME_ITEM) {
                     models.add(parseItem(parser))
                 }
             }
@@ -41,8 +44,8 @@ class XmlParser {
                 continue
             }
             when (parser.name) {
-                "title" -> item.title = parseTextFromField(parser, "title")
-                "pubDate" -> item.date = parseTextFromField(parser, "pubDate")
+                NAME_TITLE -> item.title = parseTextFromField(parser, NAME_TITLE)
+                NAME_PUB_DATE -> item.date = parseTextFromField(parser, NAME_PUB_DATE)
                 else -> skipTag(parser)
             }
         }
