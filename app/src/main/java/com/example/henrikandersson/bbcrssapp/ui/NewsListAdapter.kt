@@ -10,14 +10,11 @@ import com.example.henrikandersson.bbcrssapp.R
 class NewsListAdapter : RecyclerView.Adapter<NewsListAdapter.NewsItemViewHolder>() {
     private var mNews: ArrayList<DisplayableNewsItem> = ArrayList()
 
-    var news: ArrayList<DisplayableNewsItem>
-        get() {
-            return mNews
-        }
-        set(value) {
-            mNews = value
-            notifyDataSetChanged()
-        }
+    fun updateData(data: List<DisplayableNewsItem>) {
+        mNews.clear()
+        mNews.addAll(data)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): NewsItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.news_list_item, parent, false)

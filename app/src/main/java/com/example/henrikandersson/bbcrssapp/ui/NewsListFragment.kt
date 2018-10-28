@@ -1,32 +1,35 @@
 package com.example.henrikandersson.bbcrssapp.ui
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.henrikandersson.bbcrssapp.R
-import com.example.henrikandersson.bbcrssapp.data.BbcRssClient
-import com.example.henrikandersson.bbcrssapp.datamodel.NewsItemDataModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_news_list.*
 
 class NewsListFragment : Fragment() {
     private lateinit var layoutManager: LinearLayoutManager
     private var adapter: NewsListAdapter = NewsListAdapter()
     private var getRssFeedDisposable: Disposable? = null
+    private lateinit var rssViewModel: RssViewModel
 
     companion object {
-        private const val TAG = "NewsListFragment"
+        const val TAG = "NewsListFragment"
         fun newInstance(): NewsListFragment {
             return NewsListFragment()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        rssViewModel = ViewModelProviders.of(this).get(RssViewModel::class.java)
     }
 
     override fun onAttach(context: Context?) {
@@ -51,22 +54,15 @@ class NewsListFragment : Fragment() {
     }
 
     private fun populateNewsList() {
-        getRssFeedDisposable?.dispose()
-        getRssFeedDisposable = BbcRssClient()
-                .getRssFeed()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError {
-                    Log.d(TAG, "Couldn't fetch RSS feed, message: ${it.message}")
-                    displayInfoMessage(R.string.news_list_fragment_error_message)
+        rssViewModel.getData().observe(this, Observer { newsItems ->
+            newsItems?.let {
+                if (it.isNotEmpty()) {
+                    adapter.updateData(it)
+                } else {
+                    displayInfoMessage(R.string.news_list_fragment_no_result)
                 }
-                .subscribe { it ->
-                    if (it.size > 0) {
-                        adapter.news = convertRangeToDisplayableNewsItems(it)
-                    } else {
-                        displayInfoMessage(R.string.news_list_fragment_no_result)
-                    }
-                }
+            }
+        })
     }
 
     private fun displayInfoMessage(@StringRes message: Int) {
@@ -79,21 +75,5 @@ class NewsListFragment : Fragment() {
         super.onStop()
         getRssFeedDisposable?.dispose()
     }
-
-    private fun convertToDisplayableNewsItem(dataModel: NewsItemDataModel): DisplayableNewsItem {
-        val convertedItem = DisplayableNewsItem()
-        convertedItem.name = dataModel.title
-        convertedItem.date = dataModel.date
-        return convertedItem
-    }
-
-    private fun convertRangeToDisplayableNewsItems(dataModels: List<NewsItemDataModel>): ArrayList<DisplayableNewsItem> {
-        val convertedItems: ArrayList<DisplayableNewsItem> = ArrayList()
-        for (model in dataModels) {
-            convertedItems.add(convertToDisplayableNewsItem(model))
-        }
-        return convertedItems
-    }
-
 
 }

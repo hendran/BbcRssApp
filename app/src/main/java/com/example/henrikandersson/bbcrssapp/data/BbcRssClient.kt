@@ -10,7 +10,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class BbcRssClient {
-
     companion object {
         private const val BASE_URL = "http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/"
     }
@@ -19,21 +18,21 @@ class BbcRssClient {
 
     init {
         val retrofit: Retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(OkHttpClient.Builder().build())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
+            .baseUrl(BASE_URL)
+            .client(OkHttpClient.Builder().build())
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
         bbcRssService = retrofit.create(BbcRssService::class.java)
     }
 
-    fun getRssFeed(): Single<ArrayList<NewsItemDataModel>> {
+    fun getRssFeed(): Single<List<NewsItemDataModel>> {
         return Single.fromObservable(
-                bbcRssService.getRssFeed()
-                        .subscribeOn(Schedulers.computation())
-                        .map { rawXml ->
-                            XmlParser().parse(rawXml)
-                        }.toObservable()
+            bbcRssService.getRssFeed()
+                .subscribeOn(Schedulers.computation())
+                .map { rawXml ->
+                    XmlParser().parse(rawXml)
+                }.toObservable()
         )
     }
 }
